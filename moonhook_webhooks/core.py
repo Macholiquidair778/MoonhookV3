@@ -1,5 +1,6 @@
 # // core.py for moonhook_webhooks
 
+from moonhook_logging import Logger
 from PIL import Image
 import requests
 import base64
@@ -26,7 +27,10 @@ class DiscordWebhook:
     def SendRawContent(self, Content: str):
         Req = requests.post(
             url=self.WebhookURL,
-            data=Content
+            data=Content,
+            headers={
+                "Content-Type": "application/json"
+            }
         )
 
         return Req.status_code, Req.text
@@ -34,10 +38,21 @@ class DiscordWebhook:
     def WebhookSpam(self, ContentType: int, Content: str, DelaySeconds: int):
         # // Type 1 is text, type 2 is raw json
         while True:
+            Logger.Log("Sending message..")
             if ContentType == 1:
-                self.SendMessage(Content)
+                code, result = self.SendMessage(Content)
+                
+                if result != "":
+                    Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}!{Logger.ColorReset()}")
+                else:
+                    Logger.Log(f"Successfully sent, result(text): {result}")
             elif ContentType == 2:
-                self.SendRawContent(Content)
+                code, result = self.SendRawContent(Content)
+                
+                if result != "":
+                    Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}!{Logger.ColorReset()}")
+                else:
+                    Logger.Log(f"Successfully sent, result(text): {result}")
             else:
                 raise InvalidContentTypeError("Invalid content type!")
 

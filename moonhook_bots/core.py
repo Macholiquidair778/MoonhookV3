@@ -1,3 +1,5 @@
+from moonhook_logging import Logger
+
 import discord
 # nectarinekooky
 class DiscordToken:
@@ -10,14 +12,14 @@ async def delete_channels(guild):
         try:
             await channel.delete()
         except Exception:
-            print("couldnt delete channel")
+            Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt delete channel{Logger.ColorReset()}")
 
 async def create_channels(guild, amount, name):
     for i in range(amount):
         try:
             await guild.create_text_channel(name)
         except Exception:
-            print("couldnt create a channel")
+            Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt create a channel{Logger.ColorReset()}")
 
 async def delete_roles(guild):
     for role in guild.roles:
@@ -25,14 +27,14 @@ async def delete_roles(guild):
             if role.name != "@everyone":
                 await role.delete()
         except Exception:
-            print("couldnt delete a role")
+            Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt delete a role{Logger.ColorReset()}")
 
 async def create_roles(guild, role_name, amount):
     for i in range(amount):
         try:
             new_role = await guild.create_role(name=role_name)
         except Exception:
-            print("couldnt make a role")
+            Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt make a role{Logger.ColorReset()}")
 
 intents = discord.Intents.default()
 intents.guilds = True
@@ -42,5 +44,6 @@ client = discord.Client(intents=intents)
 async def start_bot(DiscordToken):
     try:
         await client.start(DiscordToken)
+        Logger.Log(f"Bot started successfully!")
     except discord.LoginFailure:
-        print("invalid bot token dumbass")
+        Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}invalid bot token dumbass{Logger.ColorReset()}")

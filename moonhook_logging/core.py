@@ -55,5 +55,5 @@ class Logger:
             print(gradient_line + "\033[0m")
 
     @staticmethod
-    def Log(From: str, Text: str):
-        print(f"{datetime.now()} [{From}]: {Text}")
+    def Log(Text: str):
+        print(f"{datetime.now()} [MoonHook]: {Text}")
