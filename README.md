@@ -3,9 +3,9 @@
 
   # Moonhook V3
 
-  [![Release](https://img.shields.io/github/v/release/U-235Consumer/MoonhookV3)](https://github.com/U-235Consumer/MoonhookV3/releases/latest)
-  [![Stars](https://img.shields.io/github/stars/U-235Consumer/MoonhookV3)](https://github.com/U-235Consumer/MoonhookV3/stargazers)
-  [![License](https://img.shields.io/github/license/U-235Consumer/MoonhookV3)](https://github.com/U-235Consumer/MoonhookV3/blob/main/LICENSE)
+  [![Release](https://img.shields.io/github/v/release/U-235Consumer/MoonhookV3?t=1)](https://github.com/U-235Consumer/MoonhookV3/releases/latest)
+  [![Stars](https://img.shields.io/github/stars/U-235Consumer/MoonhookV3?t=1)](https://github.com/U-235Consumer/MoonhookV3/stargazers)
+  [![License](https://img.shields.io/github/license/U-235Consumer/MoonhookV3?t=1)](https://github.com/U-235Consumer/MoonhookV3/blob/main/LICENSE)
 </div>
 
 *Note: This was an old project that me (@U-235Consumer) and @Tobobb finally finished recently. Moonhook V4 will probably be worked on soon!*
