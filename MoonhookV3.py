@@ -74,6 +74,8 @@ def strInput(t):
 
 
 def BotsPanel(Token: str, GuildID: int):
+    if os.name == "nt":
+        os.system("title Moonhook V3 - Bots")
     Logger.clear()
 
     botClient = GetBotClient()
@@ -236,6 +238,8 @@ def BotsPanel(Token: str, GuildID: int):
 
 
 def WebhookPanel(url: str):
+    if os.name == "nt":
+        os.system("title Moonhook V3 - Webhooks")
     Logger.clear()
 
     rgbGradientStart = (255, 255, 255)
@@ -341,6 +345,8 @@ def WebhookPanel(url: str):
 
 
 def main():
+    if os.name == "nt":
+        os.system("title Moonhook V3")
     # // Stuff to print the banner
 
     rgbGradientStart = (255, 98, 0)
