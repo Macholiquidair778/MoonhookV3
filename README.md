@@ -10,7 +10,7 @@
 
 *Note: This was an old project that me (@U-235Consumer) and @Tobobb finally finished recently. Moonhook V4 will probably be worked on soon!*
 
-Moonhook is a Discord utility and automation tool written in Python, featuring a clean console interface for webhook and bot management.
+Moonhook is a console-based Discord utility and automation tool written in Python
 
 ## Features
 
