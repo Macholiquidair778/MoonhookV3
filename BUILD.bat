@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --console --icon "./logo.ico" --hidden-import "discord.py" --hidden-import "requests" --hidden-import "Pillow" --hidden-import "keyboard"  "./MoonhookV3.py"
