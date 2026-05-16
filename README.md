@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="" alt="Moonhook Logo" width="150" />
+  <img src="./logo.png" alt="Moonhook Logo" width="150" />
 
   # Moonhook V3
 
