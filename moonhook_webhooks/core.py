@@ -4,6 +4,7 @@ from moonhook_logging import Logger
 from PIL import Image
 import requests
 import base64
+import threading
 import time
 import io
 
@@ -35,28 +36,36 @@ class DiscordWebhook:
 
         return Req.status_code, Req.text
     
-    def WebhookSpam(self, ContentType: int, Content: str, DelaySeconds: int):
-        # // Type 1 is text, type 2 is raw json
-        while True:
-            Logger.Log("Sending message..")
-            if ContentType == 1:
-                code, result = self.SendMessage(Content)
-                
-                if result != "":
-                    Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}!{Logger.ColorReset()}")
+    def WebhookSpam(self, ContentType: int, Content: str, DelaySeconds: int, ThreadCount: int = 5):
+        def _spam_worker():
+            # // Type 1 is text, type 2 is raw json
+            while True:
+                Logger.Log("Sending message..")
+                if ContentType == 1:
+                    code, result = self.SendMessage(Content)
+                    
+                    if result != "":
+                        Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}!{Logger.ColorReset()}")
+                    else:
+                        Logger.Log(f"Successfully sent, result(text): {result}")
+                elif ContentType == 2:
+                    code, result = self.SendRawContent(Content)
+                    
+                    if result != "":
+                        Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}!{Logger.ColorReset()}")
+                    else:
+                        Logger.Log(f"Successfully sent, result(text): {result}")
                 else:
-                    Logger.Log(f"Successfully sent, result(text): {result}")
-            elif ContentType == 2:
-                code, result = self.SendRawContent(Content)
-                
-                if result != "":
-                    Logger.Log(f"{Logger.rgb_to_ansi(255, 0, 0)}Sending error: {result}!{Logger.ColorReset()}")
-                else:
-                    Logger.Log(f"Successfully sent, result(text): {result}")
-            else:
-                raise InvalidContentTypeError("Invalid content type!")
+                    raise InvalidContentTypeError("Invalid content type!")
 
-            time.sleep(DelaySeconds)
+                time.sleep(DelaySeconds)
+                
+        for _ in range(ThreadCount):
+            t = threading.Thread(target=_spam_worker, daemon=True)
+            t.start()
+            
+        while True:
+            time.sleep(1)
 
     def ChangeWebhookName(self, NewName: str):
         resp = requests.patch(
