@@ -3,14 +3,16 @@
 
   # Moonhook V3
 
-  [![Release](https://img.shields.io/github/v/release/U-235Consumer/MoonhookV3?t=1)](https://github.com/U-235Consumer/MoonhookV3/releases/latest)
-  [![Stars](https://img.shields.io/github/stars/U-235Consumer/MoonhookV3?t=1)](https://github.com/U-235Consumer/MoonhookV3/stargazers)
-  [![License](https://img.shields.io/github/license/U-235Consumer/MoonhookV3?t=1)](https://github.com/U-235Consumer/MoonhookV3/blob/main/LICENSE)
+  [![Release](https://img.shields.io/github/v/release/Seal-Softworks-2/MoonhookV3?t=1)](https://github.com/Seal-Softworks-2/MoonhookV3/releases/latest)
+  [![Stars](https://img.shields.io/github/stars/Seal-Softworks-2/MoonhookV3?t=1)](https://github.com/Seal-Softworks-2/MoonhookV3/stargazers)
+  [![License](https://img.shields.io/github/license/Seal-Softworks-2/MoonhookV3?t=1)](https://github.com/Seal-Softworks-2/MoonhookV3/blob/main/LICENSE)
 </div>
 
-*Note: This was an old project that me (@U-235Consumer) and @Tobobb finally finished recently. Moonhook V4 will probably be worked on soon!*
+*Note: This was an old project that me (@U-238Consumer) and @Tobobb finally finished recently. Moonhook V4 will probably be worked on soon!*
 
 Moonhook is a console-based Discord utility and automation tool written in Python
+
+This repository was recently taken down by GitHub. This is the official reupload.
 
 ## Features
 
@@ -38,8 +40,8 @@ Moonhook is a console-based Discord utility and automation tool written in Pytho
    ```
 3. Follow the on-screen prompts to select either the Webhook or Bot panel.
 
-Or just download `MoonhookV3.exe` from the [Github Releases](https://github.com/U-235Consumer/MoonhookV3/releases/latest).
+Or just download `MoonhookV3.exe` from the [Github Releases](https://github.com/Seal-Softworks-2/MoonhookV3/releases/latest).
 
 ## Credits
-- **V3 Rewrite**: Jasper (@U-235Consumer)
+- **V3 Rewrite**: Jasper (@U-238Consumer)
 - **Original Creator**: Tobias (@Tobobb)
