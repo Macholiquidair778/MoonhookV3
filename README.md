@@ -8,7 +8,7 @@
   [![License](https://img.shields.io/github/license/Seal-Softworks-2/MoonhookV3?t=1)](https://github.com/Seal-Softworks-2/MoonhookV3/blob/main/LICENSE)
 </div>
 
-*Note: This was an old project that me (@U-238Consumer) and @Tobobb finally finished recently. Moonhook V4 will probably be worked on soon!*
+*Note: This was an old project that me (@U-238Consumer) and @Tobobb finally finished recently. Use [Moonhook V4](https://github.com/Seal-Softworks-2/MoonhookV4) instead!*
 
 Moonhook is a console-based Discord utility and automation tool written in Python
 
